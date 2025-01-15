@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Main{% endblock title %}
+
+{% block content %}
+    <h1>Hello User</h1>
+    <h2>
+        {% if user.is_authenticated %}
+            {{ user.username }}
+            <a href="{% url 'users:user_profile' %}"><p>My profile</p></a>
+        {% endif %}
+    </h2>
+{% endblock content %}
+
+{% comment %} request.user.username {% endcomment %}
