@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.functional import cached_property
 
 # Create your models here.
 
@@ -8,6 +9,20 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True, blank=False, null=False)
     id_verified = models.BooleanField(default=False)
+
+
+    @property
+    def posts_count(self):
+        return self.posts.count()
+
+    @property
+    def follower_count(self):
+        return self.followers.count()
+
+    @property
+    def following_count(self):
+        return self.following.count()
+
 
     def __str__(self) -> str:
         return self.username
@@ -26,11 +41,12 @@ class Profile(models.Model):
     ]
     gender = models.CharField(max_length=1, choices=gender_choices, blank=True, null=True)
 
-class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    follower_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-    posts_count = models. IntegerField(default=0)
+class Followers(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+
+    class Meta:
+        unique_together = ('follower', 'following')
 
 
 

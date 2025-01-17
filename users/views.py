@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.views.generic.edit import UpdateView, CreateView
@@ -6,10 +6,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
+from django.db.models import Count
 
 
 from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm
-from .models import User, Profile, Statistics, Posts
+from .models import User, Profile, Posts, Likes, Followers
 
 # Create your views here.
 class UserRegestration(CreateView):
@@ -25,7 +26,6 @@ class UserRegestration(CreateView):
         if self.object:
             # Создаем связанные объекты Profile и Statistics
             Profile.objects.create(user=self.object)
-            Statistics.objects.create(user=self.object)
 
             # Аутентифицируем пользователя
             email = form.cleaned_data.get('email')
@@ -70,11 +70,18 @@ def user_login(request):
 
 @login_required(login_url='/login/')
 def profile(request, username):
+    profile_user = User.objects.get(username=username)
+    is_following = Followers.objects.filter(follower=request.user, following=profile_user).exists()
     context = {
-        'user': User.objects.get(username=username)
+        'user': profile_user,
+        'is_following': is_following
     }
     return render(request, 'users/profile.html', context=context)
-
+# User.objects.annotate(
+#         posts_count=Count('posts'),
+#         follower_count=Count('followers'),
+#         following_count=Count('following'),
+#     ).get(username=username),
 
 @login_required(login_url='/login/')
 def user_profile(request):
@@ -97,3 +104,43 @@ def create_post(request):
         'form': form
     }
     return render(request, 'users/create_post.html', context=context)
+
+@login_required(login_url='/login/')
+def view_post(request, post_id):
+    post = Posts.objects.prefetch_related('likes').get(pk=post_id)
+    is_liked = post.likes.filter(pk=request.user.pk).exists()
+
+    context = {
+        'post': post,
+        'is_liked': is_liked
+    }
+    return render(request, 'users/post.html', context=context)
+
+@login_required(login_url='/login/')
+def like(request, post_id):
+    post = get_object_or_404(Posts, pk=post_id)
+    like, created = Likes.objects.get_or_create(user=request.user, post=post)
+
+    if not created:
+        like.delete()
+
+    return redirect('users:post_view', post_id=post_id)
+
+
+@login_required(login_url='/login/')
+def follow(request, user_pk):
+    user1 = request.user  # Текущий пользователь
+    user2 = get_object_or_404(User, pk=user_pk)  # Пользователь, на которого подписываются
+
+    if user1 == user2:
+        # Запрещаем подписываться на самого себя
+        return redirect('users:profile', username=user2.username)
+
+    # Получаем или создаём связь
+    follow, created = Followers.objects.get_or_create(follower=user1, following=user2)
+
+    if not created:
+        # Если связь уже существует, удаляем её
+        follow.delete()
+
+    return redirect('users:profile', username=user2.username)

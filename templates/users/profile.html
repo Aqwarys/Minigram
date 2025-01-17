@@ -24,15 +24,15 @@
                     </div>
                     <div class="row text-center mb-4">
                         <div class="col">
-                            <h5 class="mb-0">{{ user.statistics.posts_count }}</h5>
+                            <h5 class="mb-0">{{ user.posts_count }}</h5>
                             <p class="text-muted">Posts</p>
                         </div>
                         <div class="col">
-                            <h5 class="mb-0">{{ user.statistics.follower_count }}</h5>
+                            <h5 class="mb-0">{{ user.follower_count }}</h5>
                             <p class="text-muted">Followers</p>
                         </div>
                         <div class="col">
-                            <h5 class="mb-0">{{ user.statistics.following_count }}</h5>
+                            <h5 class="mb-0">{{ user.following_count }}</h5>
                             <p class="text-muted">Following</p>
                         </div>
                     </div>
@@ -46,27 +46,35 @@
                             {% comment %} d-grid gap-2 {% endcomment %}
                             <div class="row">
                                 <div class="col">
-                                    <a href="{% url 'users:edit_profile' %}" class="btn btn-warning">Edit Profile</a>
+                                    <a href="{% url 'users:edit_profile' %}" class="btn btn-warning w-100">Edit Profile</a>
                                 </div>
                                 <div class="col">
                                     <form method='post' action="{% url 'users:logout' %}">
                                         {% csrf_token %}
-                                        <button type='submit' class='btn btn-danger'>Logout</button>
+                                        <button type='submit' class='btn btn-danger w-100'>Logout</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                    {% else %}
+                        {% if is_following %}
+                            <a href="{% url 'users:follow' user.pk %}" class="btn btn-danger w-100">Unfollow</a>
+                        {% else %}
+                            <a href="{% url 'users:follow' user.pk %}" class="btn btn-success w-100">Subscribe</a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
             <div class="mt-4">
-                <a href="{% url 'users:create_post' %}" class="btn btn-outline-dark w-100">Post</a>
+                {% if request.user.username == user.username %}
+                    <a href="{% url 'users:create_post' %}" class="btn btn-outline-dark w-100">Post</a>
+                {% endif %}
                 <h5 class="mb-3 mt-3">Recent Posts</h5>
                 <div class="row g-3">
                     {% for post in user.posts.all %}
-                        <div class="col-4">
+                        <div class="col-4 mb-3">
                             <div class="position-relative" style="padding-top: 100%;">
-                                <img src="{{ post.image.url }}" alt="Post Image" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;">
+                                <a href="{% url 'users:post_view' post.pk %}"><img src="{{ post.image.url }}" alt="Post Image" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;"></a>
                             </div>
                         </div>
                     {% empty %}
