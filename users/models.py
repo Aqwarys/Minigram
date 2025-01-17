@@ -31,3 +31,43 @@ class Statistics(models.Model):
     follower_count = models.IntegerField(default=0)
     following_count = models.IntegerField(default=0)
     posts_count = models. IntegerField(default=0)
+
+
+
+class Posts(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    image = models.ImageField(upload_to='post_images/')  # Поле для изображения
+    likes = models.ManyToManyField(User, through='Likes', related_name='liked_posts')
+    description = models.TextField(max_length=600, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Post by {self.user.username} - {self.id}"
+
+
+class Comments(models.Model):
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on Post {self.post.id}"
+
+
+class Likes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes')
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE, related_name='post_likes')
+
+    class Meta:
+        unique_together = ('user', 'post')

@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
 
 
-from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm
-from .models import User, Profile, Statistics
+from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm
+from .models import User, Profile, Statistics, Posts
 
 # Create your views here.
 class UserRegestration(CreateView):
@@ -78,4 +78,22 @@ def profile(request, username):
 
 @login_required(login_url='/login/')
 def user_profile(request):
-    return render(request, 'users/profile.html')
+        return render(request, 'users/profile.html')
+
+@login_required(login_url='/login/')
+def create_post(request):
+    if request.method == 'POST':
+        form = PostCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            Posts.objects.create(user=request.user,
+                                 image=form.cleaned_data['image'],
+                                 description=form.cleaned_data['description']
+                                )
+            return redirect('users:user_profile')
+    else:
+        form = PostCreateForm
+
+    context = {
+        'form': form
+    }
+    return render(request, 'users/create_post.html', context=context)

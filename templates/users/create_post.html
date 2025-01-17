@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Create Post{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Edit Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <label for="id_image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="id_image" name="image">
+                            {% if form.image.errors %}
+                                <div class="text-danger mt-1">{{ form.image.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Bio</label>
+                            <textarea class="form-control" id="id_description" name="description" rows="4">{{ form.description.value }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="text-danger mt-1">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Publish</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'users:user_profile' %}" class="btn btn-secondary">Back to Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
