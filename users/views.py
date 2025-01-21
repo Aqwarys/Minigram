@@ -144,3 +144,25 @@ def follow(request, user_pk):
         follow.delete()
 
     return redirect('users:profile', username=user2.username)
+
+
+@login_required(login_url='/login/')
+def followers(request, username):
+    user = get_object_or_404(User, username=username)
+    followers = Followers.objects.filter(following=user)
+    context = {
+        'followers': followers,
+        'user': user
+    }
+    return render(request, 'users/followers.html', context=context)
+
+
+@login_required(login_url='/login/')
+def following(request, username):
+    user = get_object_or_404(User, username=username)
+    following = Followers.objects.filter(follower=user)
+    context = {
+        'following': following,
+        'user': user
+    }
+    return render(request, 'users/following.html', context=context)

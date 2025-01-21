@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Followers{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ user.username }}'s Followers</h2>
+    <div class="card shadow-sm p-4">
+        {% if followers %}
+            <ul class="list-group">
+                {% for follower in followers %}
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <!-- Placeholder for avatar -->
+                                {% comment %} <img src="{{follower.follower.profile.profile_picture.url}}" alt=""> {% endcomment %}
+                                <img src="{{follower.follower.profile.profile_picture.url}}" alt="" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {% comment %} {{ follower.follower.first_name|default:"?"|slice:":1" }} {% endcomment %}
+                            </div>
+                            <div>
+                                <a href="{% url 'users:profile' follower.follower.username %}" class="text-decoration-none fw-bold">
+                                    {{ follower.follower.username }}
+                                </a>
+                                <p class="text-muted mb-0">{{ follower.follower.first_name }} {{ follower.follower.last_name }}</p>
+                            </div>
+                        </div>
+                        <!-- Optional Follow Back Button -->
+                        {% if request.user != follower.follower %}
+                            <a href="{% url 'users:follow' follower.follower.pk %}" class="btn btn-outline-primary btn-sm">
+                                Follow Back
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted mb-0">No followers yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

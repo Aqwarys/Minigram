@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Following{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ user.username }}'s Following</h2>
+    <div class="card shadow-sm p-4">
+        {% if following %}
+            <ul class="list-group">
+                {% for follow in following %}
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <!-- Placeholder for avatar -->
+                                <img src="{{follow.following.profile.profile_picture.url}}" alt="" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {% comment %} <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                    {{ follow.following.first_name|default:"?"|slice:":1" }}
+                                </div> {% endcomment %}
+                            </div>
+                            <div>
+                                <a href="{% url 'users:profile' follow.following.username %}" class="text-decoration-none fw-bold">
+                                    {{ follow.following.username }}
+                                </a>
+                                <p class="text-muted mb-0">{{ follow.following.first_name }} {{ follow.following.last_name }}</p>
+                            </div>
+                        </div>
+                        <!-- Optional Unfollow Button -->
+                        {% if request.user != follow.following %}
+                            {% comment %} <a href="{% url 'users:unfollow' follow.following.pk %}" class="btn btn-outline-danger btn-sm"> {% endcomment %}
+                                Unfollow
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted mb-0">You are not following anyone yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,22 @@
+.card {
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card img {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 25px;
+}
+
+.container {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+}

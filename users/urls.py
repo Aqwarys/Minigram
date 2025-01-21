@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegestration, user_login, profile, EditProfileView, CustomLogoutView, user_profile, create_post, view_post, like, follow
+from . import views
 from django.contrib.auth.views import LogoutView
 
 from django.conf import settings
@@ -8,14 +8,16 @@ from django.conf.urls.static import static
 
 app_name = 'users'
 urlpatterns = [
-    path('regestration/', UserRegestration.as_view(), name='regestration'),
-    path('login/', user_login, name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
-    path('profile/', user_profile, name='user_profile'),
-    path('profile/<str:username>', profile, name='profile'),
-    path('edit/', EditProfileView.as_view(), name='edit_profile'),
-    path('post/', create_post, name='create_post'),
-    path('post/<int:post_id>', view_post, name='post_view'),
-    path('like/<int:post_id>', like, name='like'),
-    path('follow/<int:user_pk>', follow, name='follow'),
+    path('regestration/', views.UserRegestration.as_view(), name='regestration'),
+    path('login/', views.user_login, name='login'),
+    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
+    path('profile/', views.user_profile, name='user_profile'),
+    path('profile/<str:username>', views.profile, name='profile'),
+    path('edit/', views.EditProfileView.as_view(), name='edit_profile'),
+    path('post/', views.create_post, name='create_post'),
+    path('post/<int:post_id>', views.view_post, name='post_view'),
+    path('like/<int:post_id>', views.like, name='like'),
+    path('follow/<int:user_pk>', views.follow, name='follow'),
+    path('<str:username>/followers/', views.followers, name='followers'),
+    path('<str:username>/following/', views.following, name='following'),
 ]

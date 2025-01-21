@@ -1,15 +1,74 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Main{% endblock title %}
+{% block title %}Main Page{% endblock title %}
 
 {% block content %}
-    <h1>Hello User</h1>
-    <h2>
-        {% if user.is_authenticated %}
-            {{ user.username }}
-            <a href="{% url 'users:user_profile' %}"><p>My profile</p></a>
-        {% endif %}
-    </h2>
-{% endblock content %}
+<div class="container mt-4">
+    <div class="row m-4">
+        <div class="col-md-6">
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="card shadow-sm mb-4">
+                        <!-- Ссылка на пользователя -->
+                        <div class="card-header bg-white border-0 p-3">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ post.user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle border" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'default_img.png' %}" alt="Default Profile Picture" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
+                            {% endif %}
+                            <a href="{% url 'users:profile' post.user.username %}" class="text-dark fw-bold text-decoration-none">
+                                {{ post.user.username }}
+                            </a>
+                        </div>
 
-{% comment %} request.user.username {% endcomment %}
+                        <!-- Изображение поста -->
+                        <div class="card-body p-0">
+                            <a href="{% url 'users:post_view' post.pk %}">
+                                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid w-100" style="object-fit: cover;">
+                            </a>
+                        </div>
+
+                        <!-- Лайки и комментарии -->
+                        <div class="card-footer bg-white p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="d-flex align-items-center">
+                                        {% if not post.is_liked %}
+                                            <form method="post" action="{% url 'users:like' post.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                    <img src="{% static 'icons/like.png' %}" alt="Like Icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'users:like' post.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                    <img src="{% static 'icons/liked.png' %}" alt="Like Icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                        <i class="fa fa-heart text-danger"></i> {{ post.likes.count }} likes
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="{% url 'users:post_view' post.pk %}" class="text-muted text-decoration-none">
+                                        View all {{ post.comments_count }} comments
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="mb-0">
+                                <strong>{{ post.user.username }}</strong> {{ post.description|truncatewords:20 }}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted">No posts available at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

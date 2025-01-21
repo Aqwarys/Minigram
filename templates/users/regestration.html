@@ -1,93 +1,153 @@
-{% extends "base.html" %}
-
-{% block title %}Registration{% endblock title %}
-
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3>Create an Account</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-
-                        <!-- Username -->
-                        <div class="mb-3">
-                            <label for="id_username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="id_username" name="username" value="{{ form.username.value }}" placeholder="Enter your username">
-                            {% if form.username.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.username.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="id_email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="id_email" name="email" value="{{ form.email.value }}" placeholder="Enter your email">
-                            {% if form.email.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.email.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- First Name -->
-                        <div class="mb-3">
-                            <label for="id_first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="id_first_name" name="first_name" value="{{ form.first_name.value }}" placeholder="Enter your first name">
-                            {% if form.first_name.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.first_name.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Last Name -->
-                        <div class="mb-3">
-                            <label for="id_last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="id_last_name" name="last_name" value="{{ form.last_name.value }}" placeholder="Enter your last name">
-                            {% if form.last_name.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.last_name.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="id_password1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="id_password1" name="password1" placeholder="Enter your password">
-                            {% if form.password1.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.password1.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-3">
-                            <label for="id_password2" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="id_password2" name="password2" placeholder="Confirm your password">
-                            {% if form.password2.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.password2.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
-                </div>
-                <div class="card-footer text-center">
-                    <p class="mb-0">Already have an account? <a href="{% url 'users:login' %}">Login</a></p>
-                </div>
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'icons/minigram_logo.png' %}">
+    <title>Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .text-center {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .text-center a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Register</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <!-- Username -->
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error">{{ form.username.errors|join:" " }}</div>
+                {% endif %}
             </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error">{{ form.email.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+
+            <!-- First Name -->
+            <div class="form-group">
+                <label for="id_first_name">First Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="error">{{ form.first_name.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Last Name -->
+            <div class="form-group">
+                <label for="id_last_name">Last Name</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="error">{{ form.last_name.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="error">{{ form.password1.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="error">{{ form.password2.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+        </form>
+        <div class="text-center">
+            <p>Already have an account? <a href="{% url 'users:login' %}">Login</a></p>
         </div>
     </div>
-</div>
-{% endblock content %}
+</body>
+</html>
