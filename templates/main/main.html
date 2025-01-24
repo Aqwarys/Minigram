@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Main Page{% endblock title %}
+{% block title %}Feed{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row m-4">
+    <div class="row justify-content-center">
         <div class="col-md-6">
             {% if posts %}
                 {% for post in posts %}
-                    <div class="card shadow-sm mb-4">
-                        <!-- Ссылка на пользователя -->
-                        <div class="card-header bg-white border-0 p-3">
-                            {% if user.profile.profile_picture %}
-                                <img src="{{ post.user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle border" style="width: 40px; height: 40px; object-fit: cover;">
+                    <div class="card mb-4 shadow-sm border-0">
+                        <!-- Автор поста -->
+                        <div class="card-header bg-white d-flex align-items-center py-3">
+                            {% if post.user.profile.profile_picture %}
+                                <img src="{{ post.user.profile.profile_picture.url }}" alt="Profile Picture"
+                                     class="rounded-circle border me-3"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
                             {% else %}
-                                <img src="{% static 'default_img.png' %}" alt="Default Profile Picture" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
+                                <img src="{% static 'default_img.png' %}" alt="Default Profile Picture"
+                                     class="rounded-circle border me-3"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
                             {% endif %}
-                            <a href="{% url 'users:profile' post.user.username %}" class="text-dark fw-bold text-decoration-none">
+                            <a href="{% url 'users:profile' post.user.username %}" class="fw-bold text-dark text-decoration-none">
                                 {{ post.user.username }}
                             </a>
                         </div>
@@ -25,48 +29,49 @@
                         <!-- Изображение поста -->
                         <div class="card-body p-0">
                             <a href="{% url 'users:post_view' post.pk %}">
-                                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid w-100" style="object-fit: cover;">
+                                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid w-100"
+                                     style="object-fit: cover; max-height: 500px;">
                             </a>
                         </div>
 
-                        <!-- Лайки и комментарии -->
-                        <div class="card-footer bg-white p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <span class="d-flex align-items-center">
-                                        {% if not post.is_liked %}
-                                            <form method="post" action="{% url 'users:like' post.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn p-0 border-0 bg-transparent">
-                                                    <img src="{% static 'icons/like.png' %}" alt="Like Icon" style="width: 20px; height: 20px; margin-right: 5px;">
-                                                </button>
-                                            </form>
-                                        {% else %}
-                                            <form method="post" action="{% url 'users:like' post.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn p-0 border-0 bg-transparent">
-                                                    <img src="{% static 'icons/liked.png' %}" alt="Like Icon" style="width: 20px; height: 20px; margin-right: 5px;">
-                                                </button>
-                                            </form>
-                                        {% endif %}
-
-                                        <i class="fa fa-heart text-danger"></i> {{ post.likes.count }} likes
-                                    </span>
+                        <!-- Лайки, комментарии и описание -->
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center my-2">
+                                <div class="d-flex align-items-center">
+                                    {% if not post.is_liked %}
+                                        <form method="post" action="{% url 'users:like' post.pk %}" class="me-3">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                <img src="{% static 'icons/like.png' %}" alt="Like Icon"
+                                                     style="width: 25px; height: 25px;">
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{% url 'users:like' post.pk %}" class="me-3">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                <img src="{% static 'icons/liked.png' %}" alt="Liked Icon"
+                                                     style="width: 25px; height: 25px;">
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    <span class="text-muted">{{ post.likes.count }} likes</span>
                                 </div>
-                                <div>
-                                    <a href="{% url 'users:post_view' post.pk %}" class="text-muted text-decoration-none">
-                                        View all {{ post.comments_count }} comments
-                                    </a>
-                                </div>
+                                <a href="{% url 'users:post_view' post.pk %}" class="text-muted text-decoration-none">
+                                    View all {{ post.comments_count }} comments
+                                </a>
                             </div>
                             <p class="mb-0">
-                                <strong>{{ post.user.username }}</strong> {{ post.description|truncatewords:20 }}
+                                <strong>{{ post.user.username }}</strong>
+                                <span class="text-muted">{{ post.description|truncatewords:20 }}</span>
                             </p>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-muted">No posts available at the moment.</p>
+                <div class="text-center text-muted mt-5">
+                    <p>No posts available at the moment.</p>
+                </div>
             {% endif %}
         </div>
     </div>

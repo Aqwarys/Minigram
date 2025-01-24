@@ -10,7 +10,7 @@ from django.db.models import Count
 
 
 from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm
-from .models import User, Profile, Posts, Likes, Followers
+from .models import User, Profile, Posts, Likes, Followers, Bookmark
 
 # Create your views here.
 class UserRegestration(CreateView):
@@ -109,10 +109,12 @@ def create_post(request):
 def view_post(request, post_id):
     post = Posts.objects.prefetch_related('likes').get(pk=post_id)
     is_liked = post.likes.filter(pk=request.user.pk).exists()
+    is_bookmarked = post.bookmarks.filter(pk=request.user.pk).exists()
 
     context = {
         'post': post,
-        'is_liked': is_liked
+        'is_liked': is_liked,
+        'is_bookmarked': is_bookmarked
     }
     return render(request, 'users/post.html', context=context)
 
@@ -124,7 +126,9 @@ def like(request, post_id):
     if not created:
         like.delete()
 
-    return redirect('users:post_view', post_id=post_id)
+    previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
+    return redirect(previous_url)
+    # return redirect('users:post_view', post_id=post_id)
 
 
 @login_required(login_url='/login/')
@@ -166,3 +170,42 @@ def following(request, username):
         'user': user
     }
     return render(request, 'users/following.html', context=context)
+
+
+
+
+@login_required(login_url='/login/')
+def friends(request, username):
+    user1 = get_object_or_404(User, username=username)
+
+    friends = User.objects.filter(
+        followers__follower=user1,
+        following__following=user1
+    ).distinct()
+
+    context = {
+        'user': user1,
+        'friends': friends
+    }
+    return render(request, 'users/friends.html', context=context)
+
+
+@login_required(login_url='/login/')
+def bookmark(request, post_id):
+    post = get_object_or_404(Posts, pk=post_id)
+    bookmark, created = Bookmark.objects.get_or_create(user=request.user, post=post)
+
+    if not created:
+        bookmark.delete()
+
+    previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
+    return redirect(previous_url)
+
+
+@login_required(login_url='/login/')
+def bookmarks_view(request):
+    user = request.user
+    context = {
+        'bookmarks': Bookmark.objects.filter(user=user)
+    }
+    return render(request, 'users/bookmarks.html', context=context)

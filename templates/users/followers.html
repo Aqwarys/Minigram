@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Followers{% endblock title %}
 
 {% block content %}
@@ -14,7 +14,11 @@
                             <div class="me-3">
                                 <!-- Placeholder for avatar -->
                                 {% comment %} <img src="{{follower.follower.profile.profile_picture.url}}" alt=""> {% endcomment %}
-                                <img src="{{follower.follower.profile.profile_picture.url}}" alt="" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {% if follower.follower.profile.profile_picture %}
+                                    <img src="{{follower.follower.profile.profile_picture.url}}" alt="" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {% else %}
+                                    <img src="{% static 'default_img.png' %}" alt="Default Profile Picture" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {% endif %}
                                 {% comment %} {{ follower.follower.first_name|default:"?"|slice:":1" }} {% endcomment %}
                             </div>
                             <div>

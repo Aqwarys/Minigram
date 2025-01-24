@@ -54,6 +54,7 @@ class Posts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     image = models.ImageField(upload_to='post_images/')  # Поле для изображения
     likes = models.ManyToManyField(User, through='Likes', related_name='liked_posts')
+    bookmarks = models.ManyToManyField(User, through='Bookmark', related_name='bookmarked_posts')
     description = models.TextField(max_length=600, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -87,3 +88,15 @@ class Likes(models.Model):
 
     class Meta:
         unique_together = ('user', 'post')
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+
+    def __str__(self) -> str:
+        return f"{self.user.username} bookmarked {self.post.title}"

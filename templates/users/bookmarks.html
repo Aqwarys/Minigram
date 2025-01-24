@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bookmarks{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Your Bookmarked Posts</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if bookmarks %}
+                {% for bookmark in bookmarks %}
+                    <div class="card mb-4 shadow-sm border-0">
+                        <!-- Автор поста -->
+                        <div class="card-header bg-white d-flex align-items-center py-3">
+                            {% if bookmark.post.user.profile.profile_picture %}
+                                <img src="{{ bookmark.post.user.profile.profile_picture.url }}" alt="Profile Picture"
+                                     class="rounded-circle border me-3"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'default_img.png' %}" alt="Default Profile Picture"
+                                     class="rounded-circle border me-3"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
+                            {% endif %}
+                            <a href="{% url 'users:profile' bookmark.post.user.username %}" class="fw-bold text-dark text-decoration-none">
+                                {{ bookmark.post.user.username }}
+                            </a>
+                        </div>
+
+                        <!-- Изображение поста -->
+                        <div class="card-body p-0">
+                            <a href="{% url 'users:post_view' bookmark.post.pk %}">
+                                <img src="{{ bookmark.post.image.url }}" alt="Post Image" class="img-fluid w-100"
+                                     style="object-fit: cover; max-height: 500px;">
+                            </a>
+                        </div>
+
+                        <!-- Лайки, описание и управление закладками -->
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center my-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="text-muted">{{ bookmark.post.likes.count }} likes</span>
+                                </div>
+                                <form method="post" action="{% url 'users:bookmark' bookmark.post.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Remove Bookmark
+                                    </button>
+                                </form>
+                            </div>
+                            <p class="mb-0">
+                                <strong>{{ bookmark.post.user.username }}</strong>
+                                <span class="text-muted">{{ bookmark.post.description|truncatewords:20 }}</span>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center text-muted mt-5">
+                    <p>No bookmarks yet. Start bookmarking posts to see them here!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

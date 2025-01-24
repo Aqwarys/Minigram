@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     {% load static %}
@@ -69,12 +70,12 @@
         <a class='links'href="{% url 'main:main' %}"><img src="{% static 'icons/feed.png' %}" alt="Feed"> Лента</a>
         {% comment %} <a href="#"><img src="{% static 'icons/messenger.png' %}" alt="Messenger"> Мессенджер</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/calls.png' %}" alt="Calls"> Звонки</a> {% endcomment %}
-        <a class='links'href="#"><img src="{% static 'icons/friends.png' %}" alt="Friends"> Друзья</a>
+        <a class='links'href="{% url 'users:friends' request.user.username %}"><img src="{% static 'icons/friends.png' %}" alt="Friends"> Друзья</a>
         <a class='links'href="#"><img src="{% static 'icons/communities.png' %}" alt="Communities"> Сообщества</a>
         {% comment %} <a href="#"><img src="{% static 'icons/photos.png' %}" alt="Photos"> Фото</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/music.png' %}" alt="Music"> Музыка</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/videos.png' %}" alt="Videos"> Видео</a> {% endcomment %}
-        <a class='links'href="#"><img src="{% static 'icons/bookmark.png' %}" alt="Market"> Закладки</a>
+        <a class='links'href="{% url 'users:bookmarks' %}"><img src="{% static 'icons/bookmark1.png' %}" alt="Market"> Закладки</a>
 
         <div class="section-title">Сервисы</div>
         {% comment %} <a href="#"><img src="{% static 'icons/services.png' %}" alt="Services"> Сервисы</a> {% endcomment %}

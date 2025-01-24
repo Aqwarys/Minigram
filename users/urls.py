@@ -17,7 +17,10 @@ urlpatterns = [
     path('post/', views.create_post, name='create_post'),
     path('post/<int:post_id>', views.view_post, name='post_view'),
     path('like/<int:post_id>', views.like, name='like'),
+    path('bookmark/<int:post_id>', views.bookmark, name='bookmark'),
     path('follow/<int:user_pk>', views.follow, name='follow'),
     path('<str:username>/followers/', views.followers, name='followers'),
     path('<str:username>/following/', views.following, name='following'),
+    path('<str:username>/friends', views.friends, name='friends'),
+    path('bookmarks/', views.bookmarks_view, name='bookmarks'),
 ]

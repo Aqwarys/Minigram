@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Friends{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ user.username }}'s Friends</h2>
+    <div class="card shadow-sm p-4">
+        {% if friends %}
+            <ul class="list-group">
+                {% for friend in friends %}
+                    <li class="list-group-item d-flex align-items-center">
+                        
+                        <div class="me-3">
+                            {% if friend.profile.profile_picture %}
+                                <img src="{{friend.profile.profile_picture.url}}" alt="" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                            {% else %}
+                                <img src="{% static 'default_img.png' %}" alt="Default Profile Picture" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                            {% endif %}
+                            {% comment %} <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                {{ friend.first_name|default:"?"|slice:":1" }}
+                            </div> {% endcomment %}
+                        </div>
+                        <a href="{% url 'users:profile' friend.username %}" class="text-decoration-none fw-bold">
+                            {{ friend.username }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted mb-0">No friends found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
