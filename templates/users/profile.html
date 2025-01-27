@@ -71,12 +71,12 @@
                 </div>
             </div>
             <div class="mt-4">
-                {% if request.user.username == user.username %}
+                {% comment %} {% if request.user.username == user.username %}
                     <a href="{% url 'users:create_post' %}" class="btn btn-outline-dark w-100">Post</a>
-                {% endif %}
+                {% endif %} {% endcomment %}
                 <h5 class="mb-3 mt-3">Recent Posts</h5>
                 <div class="row g-3">
-                    {% for post in user.posts.all %}
+                    {% for post in posts %}
                         <div class="col-4 mb-3">
                             <div class="position-relative" style="padding-top: 100%;">
                                 <a href="{% url 'users:post_view' post.pk %}"><img src="{{ post.image.url }}" alt="Post Image" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;"></a>

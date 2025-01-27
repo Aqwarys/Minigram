@@ -10,7 +10,7 @@ from django.db.models import Count
 
 
 from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm
-from .models import User, Profile, Posts, Likes, Followers, Bookmark
+from .models import User, Profile, Posts, Likes, Followers, Bookmark, Community, Community_Follow
 
 # Create your views here.
 class UserRegestration(CreateView):
@@ -72,9 +72,11 @@ def user_login(request):
 def profile(request, username):
     profile_user = User.objects.get(username=username)
     is_following = Followers.objects.filter(follower=request.user, following=profile_user).exists()
+    posts = Posts.objects.filter(user=profile_user, community=None).select_related('user')
     context = {
         'user': profile_user,
-        'is_following': is_following
+        'is_following': is_following,
+        'posts': posts
     }
     return render(request, 'users/profile.html', context=context)
 # User.objects.annotate(
@@ -85,23 +87,46 @@ def profile(request, username):
 
 @login_required(login_url='/login/')
 def user_profile(request):
-        return render(request, 'users/profile.html')
+    posts = Posts.objects.filter(user=request.user, community=None).select_related('user')
+    context = {
+        'posts': posts
+    }
+    return render(request, 'users/profile.html', context=context)
 
 @login_required(login_url='/login/')
 def create_post(request):
     if request.method == 'POST':
         form = PostCreateForm(request.POST, request.FILES)
+        community_id = request.POST.get('community_id')  # Получаем ID сообщества из POST-запроса
+
         if form.is_valid():
-            Posts.objects.create(user=request.user,
-                                 image=form.cleaned_data['image'],
-                                 description=form.cleaned_data['description']
-                                )
-            return redirect('users:user_profile')
+            community = None
+
+            # Если передан community_id, находим сообщество
+            if community_id:
+                community = get_object_or_404(Community, id=community_id)
+
+                # Проверяем, что пользователь — владелец сообщества
+                if community.owner != request.user:
+                    return render(request, 'users/create_post.html', {
+                        'form': form,
+                        'error': 'You are not the owner of this community.'
+                    })
+
+            # Создаём пост
+            Posts.objects.create(
+                user=request.user,
+                community=community,
+                image=form.cleaned_data['image'],
+                description=form.cleaned_data['description']
+            )
+            return redirect('users:user_profile')  # Перенаправление на профиль пользователя
     else:
-        form = PostCreateForm
+        form = PostCreateForm()
 
     context = {
-        'form': form
+        'form': form,
+        'communities': Community.objects.filter(owner=request.user)  # Доступные сообщества
     }
     return render(request, 'users/create_post.html', context=context)
 
@@ -209,3 +234,31 @@ def bookmarks_view(request):
         'bookmarks': Bookmark.objects.filter(user=user)
     }
     return render(request, 'users/bookmarks.html', context=context)
+
+@login_required(login_url='/login/')
+def community_view(request, slugger):
+    community = Community.objects.get(slug=slugger)
+    is_following = Community_Follow.objects.filter(user=request.user, community=community).exists()
+    posts = Posts.objects.filter(community=community).select_related('user')
+    context = {
+        'community': community,
+        'is_following': is_following,
+        'posts': posts
+    }
+
+    return render(request, 'users/community.html', context=context)
+
+@login_required(login_url='/login/')
+def community_follow(request, slugger):
+    user = request.user
+    community = get_object_or_404(Community, slug=slugger)
+
+    if user == community.owner:
+        return redirect('users:community', slugger=slugger)
+
+    follow, created = Community_Follow.objects.get_or_create(user=user, community=community)
+
+    if not created:
+        follow.delete()
+
+    return redirect('users:community', slugger=slugger)

@@ -67,6 +67,7 @@
 
         </div>
         <a class='links'href="{% url 'users:user_profile' %}"><img src="{% static 'icons/profile.png' %}" alt="Profile"> Профиль</a>
+        <a class='links'href="{% url 'users:create_post' %}"><img src="{% static 'icons/create_post.png' %}" alt="Post"> Создать</a>
         <a class='links'href="{% url 'main:main' %}"><img src="{% static 'icons/feed.png' %}" alt="Feed"> Лента</a>
         {% comment %} <a href="#"><img src="{% static 'icons/messenger.png' %}" alt="Messenger"> Мессенджер</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/calls.png' %}" alt="Calls"> Звонки</a> {% endcomment %}

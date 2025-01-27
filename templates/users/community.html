@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <!-- Баннер сообщества -->
+            <img src="{{ community.banner.url }}" alt="Community Banner" class="img-fluid rounded-3 mb-3">
+
+            <!-- Информация о сообществе -->
+            <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                    <img src="{{ community.avatar.url }}" alt="Community Avatar" class="rounded-circle" style="width: 80px; height: 80px;">
+                </div>
+                <div>
+                    <h4 class="mb-1">{{ community.name }}</h4>
+                    {% comment %} <p class="text-muted mb-0">Created at: {{ community.created_at|date:"d M Y" }}</p> {% endcomment %}
+                    <p class="text-muted mb-0">{{ community.following_count }} Followers</p>
+                </div>
+            </div>
+
+            <!-- Описание сообщества -->
+            {% if community.description %}
+                <p class="text-muted">{{ community.description }}</p>
+            {% else %}
+                <p class="text-muted fst-italic">No description available.</p>
+            {% endif %}
+
+            {% if not is_following and user != community.owner %}
+                <a href="{% url 'users:community_follow' community.slug %}" class="btn btn-success mt-3">Subscribe</a>
+            {% elif user != community.owner %}
+                <a href="{% url 'users:community_follow' community.slug %}" class="btn btn-danger mt-3">Unfollow</a>
+            {% endif %}
+            <!-- Ссылка на внешний ресурс -->
+            {% if community.link %}
+                <a href="{{ community.link }}" target="_blank" class="btn btn-outline-primary mt-3">Visit Website</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Секция для участников, событий или постов -->
+    <div class="mt-4">
+        <h3>Recent Posts</h3>
+        <!-- Здесь будет список постов -->
+        <div class="row g-3">
+            {% for post in posts %}
+                <div class="col-4 mb-3">
+                    <div class="position-relative" style="padding-top: 100%;">
+                        <a href="{% url 'users:post_view' post.pk %}"><img src="{{ post.image.url }}" alt="Post Image" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;"></a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-info">No posts available yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

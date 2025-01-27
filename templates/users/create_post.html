@@ -6,36 +6,49 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3>Edit Profile</h3>
+            <div class="card shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white text-center rounded-top" style="background-color: #55ADEE;">
+                    <h3 class="mb-0">Create a New Post</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        <!-- Profile Picture -->
-                        <div class="mb-3">
-                            <label for="id_image" class="form-label">Image</label>
+                        <!-- Image Upload -->
+                        <div class="mb-4">
+                            <label for="id_image" class="form-label fw-semibold">Upload Image</label>
                             <input type="file" class="form-control" id="id_image" name="image">
                             {% if form.image.errors %}
-                                <div class="text-danger mt-1">{{ form.image.errors.0 }}</div>
+                                <div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <!-- Bio -->
-                        <div class="mb-3">
-                            <label for="id_description" class="form-label">Bio</label>
-                            <textarea class="form-control" id="id_description" name="description" rows="4">{{ form.description.value }}</textarea>
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="id_description" class="form-label fw-semibold">Post Description</label>
+                            <textarea class="form-control" id="id_description" name="description" rows="4" placeholder="Write something...">{{ form.description.value }}</textarea>
                             {% if form.description.errors %}
-                                <div class="text-danger mt-1">{{ form.description.errors.0 }}</div>
+                                <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
                             {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Publish</button>
+
+                        <!-- Post As -->
+                        <div class="mb-4">
+                            <label for="community_id" class="form-label fw-semibold">Post As</label>
+                            <select class="form-select" name="community_id" id="community_id">
+                                <option value="">Personal</option>
+                                {% for community in communities %}
+                                    <option value="{{ community.id }}">{{ community.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success w-100 py-2">Publish Post</button>
                     </form>
                 </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'users:user_profile' %}" class="btn btn-secondary">Back to Profile</a>
+                <div class="card-footer text-center bg-light rounded-bottom">
+                    <a href="{% url 'users:user_profile' %}" class="btn btn-outline-secondary w-100">Back to Profile</a>
                 </div>
             </div>
         </div>

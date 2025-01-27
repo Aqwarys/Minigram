@@ -23,4 +23,6 @@ urlpatterns = [
     path('<str:username>/following/', views.following, name='following'),
     path('<str:username>/friends', views.friends, name='friends'),
     path('bookmarks/', views.bookmarks_view, name='bookmarks'),
+    path('community/<str:slugger>', views.community_view, name='community'),
+    path('follow/<str:slugger>', views.community_follow, name='community_follow'),
 ]
