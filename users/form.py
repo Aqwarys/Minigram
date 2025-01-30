@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Profile, Posts
+from .models import User, Profile, Posts, Community
 
 class UserRegestrationForm(UserCreationForm):
     class Meta:
@@ -21,3 +21,9 @@ class PostCreateForm(forms.ModelForm):
     class Meta:
         model = Posts
         fields = ['image', 'description']
+
+
+class CreateCommunityForm(forms.ModelForm):
+    class Meta:
+        model = Community
+        fields = ['avatar', 'banner', 'name', 'description', 'link']

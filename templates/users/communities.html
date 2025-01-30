@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My Communities{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'users:create_community' %}" class="btn btn-primary">+ Create Community</a>
+    </div>
+
+    <h3 class="mb-2">My Communities</h3>
+    {% if own_community %}
+        <ul class="list-group shadow-sm mb-4">
+            {% for community in own_community %}
+                <li class="list-group-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ community.avatar.url }}"
+                             alt="{{ community.name }}"
+                             class="rounded-circle border me-3"
+                             style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="{% url 'users:community' community.slug %}"
+                                   class="text-dark text-decoration-none">
+                                    {{ community.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted small mb-0">{{ community.description|truncatechars:80 }}</p>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center text-muted">You have not created any communities yet.</p>
+    {% endif %}
+
+    <h3 class="mb-2">Followed Communities</h3>
+    {% if communities %}
+        <ul class="list-group shadow-sm">
+            {% for community_follow in communities %}
+                <li class="list-group-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ community_follow.community.avatar.url }}"
+                             alt="{{ community_follow.community.name }}"
+                             class="rounded-circle border me-3"
+                             style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="{% url 'users:community' community_follow.community.slug %}"
+                                   class="text-dark text-decoration-none">
+                                    {{ community_follow.community.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted small mb-0">{{ community_follow.community.description|truncatechars:80 }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'users:community_follow' community_follow.community.slug %}" class="btn btn-danger btn-sm">
+                        Unfollow
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">You are not following any communities yet.</p>
+    {% endif %}
+</div>
+{% endblock content %}

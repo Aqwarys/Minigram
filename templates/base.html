@@ -72,7 +72,7 @@
         {% comment %} <a href="#"><img src="{% static 'icons/messenger.png' %}" alt="Messenger"> Мессенджер</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/calls.png' %}" alt="Calls"> Звонки</a> {% endcomment %}
         <a class='links'href="{% url 'users:friends' request.user.username %}"><img src="{% static 'icons/friends.png' %}" alt="Friends"> Друзья</a>
-        <a class='links'href="#"><img src="{% static 'icons/communities.png' %}" alt="Communities"> Сообщества</a>
+        <a class='links'href="{% url 'users:communities_list' %}"><img src="{% static 'icons/communities.png' %}" alt="Communities"> Сообщества</a>
         {% comment %} <a href="#"><img src="{% static 'icons/photos.png' %}" alt="Photos"> Фото</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/music.png' %}" alt="Music"> Музыка</a> {% endcomment %}
         {% comment %} <a href="#"><img src="{% static 'icons/videos.png' %}" alt="Videos"> Видео</a> {% endcomment %}

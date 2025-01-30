@@ -25,4 +25,6 @@ urlpatterns = [
     path('bookmarks/', views.bookmarks_view, name='bookmarks'),
     path('community/<str:slugger>', views.community_view, name='community'),
     path('follow/<str:slugger>', views.community_follow, name='community_follow'),
+    path('communities/', views.community_list, name='communities_list'),
+    path('create_community/', views.create_community, name='create_community'),
 ]

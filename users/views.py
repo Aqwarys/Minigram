@@ -9,7 +9,7 @@ from django.contrib.auth.views import LogoutView
 from django.db.models import Count
 
 
-from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm
+from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm, CreateCommunityForm
 from .models import User, Profile, Posts, Likes, Followers, Bookmark, Community, Community_Follow
 
 # Create your views here.
@@ -172,7 +172,9 @@ def follow(request, user_pk):
         # Если связь уже существует, удаляем её
         follow.delete()
 
-    return redirect('users:profile', username=user2.username)
+    previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
+    return redirect(previous_url)
+
 
 
 @login_required(login_url='/login/')
@@ -261,4 +263,35 @@ def community_follow(request, slugger):
     if not created:
         follow.delete()
 
-    return redirect('users:community', slugger=slugger)
+    previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
+    return redirect(previous_url)
+
+
+@login_required(login_url='/login/')
+def community_list(request):
+    user = request.user
+    communites = Community_Follow.objects.filter(user=user)
+    own_community = Community.objects.filter(owner=user)
+    context = {
+        'communities': communites,
+        'own_community': own_community
+    }
+
+    return render(request, 'users/communities.html', context=context)
+
+
+@login_required(login_url='/login/')
+def create_community(request):
+    if request.method == 'POST':
+        form = CreateCommunityForm(request.POST, request.FILES)
+        if form.is_valid():
+            community = form.save(commit=False)
+            community.owner = request.user
+            community.save()
+            return redirect('users:community', slugger=community.slug)
+    else:
+        form = CreateCommunityForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'users/create_community.html', context=context)

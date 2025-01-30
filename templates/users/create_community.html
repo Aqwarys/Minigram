@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Create Community{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center">Create a New Community</h2>
+        <a href="{% url 'users:communities_list' %}" class="btn btn-outline-secondary">Back</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h5 class="mb-0">Community Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Community Name -->
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Community Name</label>
+                            <input type="text" class="form-control" id="id_name" name="name" value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.errors %}
+                                <div class="text-danger mt-1">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="id_description" name="description" rows="4">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="text-danger mt-1">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Avatar Upload -->
+                        <div class="mb-3">
+                            <label for="id_avatar" class="form-label">Avatar</label>
+                            <input type="file" class="form-control" id="id_avatar" name="avatar">
+                            {% if form.avatar.errors %}
+                                <div class="text-danger mt-1">{{ form.avatar.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Banner Upload -->
+                        <div class="mb-3">
+                            <label for="id_banner" class="form-label">Banner</label>
+                            <input type="file" class="form-control" id="id_banner" name="banner">
+                            {% if form.banner.errors %}
+                                <div class="text-danger mt-1">{{ form.banner.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- External Link -->
+                        <div class="mb-3">
+                            <label for="id_link" class="form-label">External Link (optional)</label>
+                            <input type="url" class="form-control" id="id_link" name="link" value="{{ form.link.value|default:'' }}">
+                            {% if form.link.errors %}
+                                <div class="text-danger mt-1">{{ form.link.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100">Create Community</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'users:communities_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
