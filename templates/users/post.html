@@ -59,12 +59,51 @@
                                 </form>
                             {% endif %}
                         </span>
+
                     </div>
+                    <div class="mb-4">
+                        <form method="post" action="{% url 'users:create_comment' post.pk %}">
+                            {% csrf_token %}
+                            <textarea class="form-control mt-3" id="id_comment" name="text" rows="2" placeholder="Write something..."></textarea>
+                            {% if form.text.errors %}
+                                <div class="text-danger small mt-1">{{ form.text.errors.0 }}</div>
+                            {% endif %}
+                            <div class="d-flex justify-content-end mt-2">
+                                <button type="subit" class="btn btn-primary px-4">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% if comments %}
+                        <div class="mt-4">
+                            <h5 class="fw-semibold">Comments ({{ comments|length }})</h5>
+                            <div class="list-group">
+                                {% for comment in comments %}
+                                    <div class="list-group-item border-0 py-3 d-flex align-items-start">
+                                        <!-- Аватар -->
+                                        <a href="{% url 'users:profile' comment.user.username %}"><img src="{{ comment.user.profile.profile_picture.url }}" alt="Avatar" class="rounded-circle me-3" width="50" height="50"></a>
+
+                                        <div class="flex-grow-1">
+                                            <!-- Имя и дата -->
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{% url 'users:profile' comment.user.username %}" class="text-decoration-none text-dark"><span class="fw-semibold">{{ comment.user.first_name }} {{ comment.user.last_name }} (@{{ comment.user.username }})</span></a>
+                                                <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                                            </div>
+                                            <!-- Текст комментария -->
+                                            <p class="mb-0 text-secondary">{{ comment.text }}</p>
+                                        </div>
+                                    </div>
+                                    {% if not forloop.last %}
+                                        <hr class="my-2">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
 
                 </div>
-                <div class="card-footer">
+                {% comment %} <div class="card-footer">
                     <a href="{% url 'users:user_profile' %}" class="btn btn-secondary">Back to Profile</a>
-                </div>
+                </div> {% endcomment %}
             </div>
         </div>
     </div>

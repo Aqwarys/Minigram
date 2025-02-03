@@ -32,7 +32,7 @@
                         </div>
                         <!-- Optional Unfollow Button -->
                         {% if request.user != follow.following %}
-                            {% comment %} <a href="{% url 'users:unfollow' follow.following.pk %}" class="btn btn-outline-danger btn-sm"> {% endcomment %}
+                            <a href="{% url 'users:follow' follow.following.pk %}" class="btn btn-outline-danger btn-sm">
                                 Unfollow
                             </a>
                         {% endif %}

@@ -9,8 +9,18 @@ from django.contrib.auth.views import LogoutView
 from django.db.models import Count
 
 
-from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm, CreateCommunityForm
-from .models import User, Profile, Posts, Likes, Followers, Bookmark, Community, Community_Follow
+from .form import UserRegestrationForm, UserLoginForm, ProfileEditForm, PostCreateForm, CreateCommunityForm, CreateCommentForm
+from .models import (User,
+                     Profile,
+                     Posts,
+                     Likes,
+                     Followers,
+                     Bookmark,
+                     Community,
+                     Community_Follow,
+                     Comments
+                     )
+
 
 # Create your views here.
 class UserRegestration(CreateView):
@@ -135,11 +145,14 @@ def view_post(request, post_id):
     post = Posts.objects.prefetch_related('likes').get(pk=post_id)
     is_liked = post.likes.filter(pk=request.user.pk).exists()
     is_bookmarked = post.bookmarks.filter(pk=request.user.pk).exists()
+    comments = Comments.objects.filter(post=post)
 
     context = {
         'post': post,
         'is_liked': is_liked,
-        'is_bookmarked': is_bookmarked
+        'is_bookmarked': is_bookmarked,
+        'comments': comments,
+        'form': CreateCommentForm()
     }
     return render(request, 'users/post.html', context=context)
 
@@ -175,7 +188,17 @@ def follow(request, user_pk):
     previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
     return redirect(previous_url)
 
+@login_required(login_url='/login/')
+def follower_remove(request, user_pk):
+    user1 = request.user
+    user2 = get_object_or_404(User, pk=user_pk)
 
+    followed = Followers.objects.filter(follower=user2, following=user1)
+    if followed.exists():
+        followed.delete()
+
+    previous_url = request.META.get('HTTP_REFERER', 'users:feed')  # Указываем fallback на feed, если HTTP_REFERER пустой
+    return redirect(previous_url)
 
 @login_required(login_url='/login/')
 def followers(request, username):
@@ -270,10 +293,15 @@ def community_follow(request, slugger):
 @login_required(login_url='/login/')
 def community_list(request):
     user = request.user
-    communites = Community_Follow.objects.filter(user=user)
+    communities = Community.objects.exclude(
+        id__in=Community_Follow.objects.filter(user=user).values_list("community_id", flat=True)
+    ).exclude(owner=user)
+
+    user_communites = Community_Follow.objects.filter(user=user)
     own_community = Community.objects.filter(owner=user)
     context = {
-        'communities': communites,
+        'communities': communities,
+        'user_communities': user_communites,
         'own_community': own_community
     }
 
@@ -295,3 +323,16 @@ def create_community(request):
         'form': form
     }
     return render(request, 'users/create_community.html', context=context)
+
+
+@login_required(login_url='/login/')
+def comment_create(request, post_id):
+    if request.method == 'POST':
+        form = CreateCommentForm(request.POST)
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            post = get_object_or_404(Posts, pk=post_id)
+            Comments.objects.create(post=post, text=text, user=request.user)
+            return redirect('users:post_view', post_id=post.pk)
+
+    return redirect('users:post_view', post_id=post_id)

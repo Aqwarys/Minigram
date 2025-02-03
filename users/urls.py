@@ -19,6 +19,7 @@ urlpatterns = [
     path('like/<int:post_id>', views.like, name='like'),
     path('bookmark/<int:post_id>', views.bookmark, name='bookmark'),
     path('follow/<int:user_pk>', views.follow, name='follow'),
+    path('follow_remove/<int:user_pk>', views.follower_remove, name='follow_remove'),
     path('<str:username>/followers/', views.followers, name='followers'),
     path('<str:username>/following/', views.following, name='following'),
     path('<str:username>/friends', views.friends, name='friends'),
@@ -27,4 +28,5 @@ urlpatterns = [
     path('follow/<str:slugger>', views.community_follow, name='community_follow'),
     path('communities/', views.community_list, name='communities_list'),
     path('create_community/', views.create_community, name='create_community'),
+    path('comment/<int:post_id>', views.comment_create, name='create_comment'),
 ]

@@ -29,9 +29,13 @@
                             </div>
                         </div>
                         <!-- Optional Follow Back Button -->
-                        {% if request.user != follower.follower %}
+                        {% if request.user != follower.following %}
                             <a href="{% url 'users:follow' follower.follower.pk %}" class="btn btn-outline-primary btn-sm">
                                 Follow Back
+                            </a>
+                        {% else %}
+                            <a href="{% url 'users:follow_remove' follower.follower.pk %}" class="btn btn-outline-danger btn-sm">
+                                Remove
                             </a>
                         {% endif %}
                     </li>

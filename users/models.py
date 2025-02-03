@@ -137,3 +137,4 @@ class Bookmark(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} bookmarked {self.post.title}"
+
