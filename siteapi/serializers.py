@@ -1,7 +1,7 @@
 from users.models import Community
 from rest_framework import serializers
 
-from users.models import Profile
+from users.models import Profile, Posts, User, Comments
 
 class CommunitiesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +19,30 @@ class ProfileSerilizer(serializers.ModelSerializer):
             'profile_picture',
             'user_id'
         ]
+
+class PostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Posts
+        fields = [
+            'user',
+            'community',
+            'image',
+            'description',
+        ]
+
+class UserSerializer(serializers.ModelSerializer):
+    posts_count = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'posts_count']
+
+class PostCommentsSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source="user.username")
+    post = serializers.ReadOnlyField(source="post.id")
+    
+    class Meta:
+        model = Comments
+        fields = ['id', 'user', 'post', 'text', 'created_at']
+
+    def create(self, validated_data):
+        return Comments.objects.create(**validated_data)

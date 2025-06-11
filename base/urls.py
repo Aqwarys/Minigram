@@ -26,7 +26,7 @@ urlpatterns = [
     path('', lambda request: HttpResponseRedirect('/home/')),
     path('', include('users.urls')),
     path('home/', include('main.urls')),
-
+    path('api/', include('siteapi.urls'))
 ]
 
 
